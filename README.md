@@ -14,3 +14,5 @@ For example, if I need to use GCR's workspace gcrllama2ws to submit Singularity 
 ```
 pim.py gcrllama2ws msrresrchvc
 ```
+
+You need to have AzCLI installed. You still need to `az login` manually and the script cannot run without your access token. I did not include a requirements.txt but it's not hard to figure out by reading exception messages.
