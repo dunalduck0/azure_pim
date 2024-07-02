@@ -9,3 +9,8 @@ List all eligible scope and roles, and wether it's activated
 pim.py <scope_name_1> <scope_name_2>
 Send requests to elevate these two scopes
 ```
+
+For example, if I need to use GCR's workspace gcrllama2ws to submit Singularity jobs, I will run
+```
+pim.py gcrllama2ws msrresrchvc
+```
