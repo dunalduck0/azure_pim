@@ -22,3 +22,5 @@ PyJWT
 requests
 pytz
 ```
+
+You may update 'start_time' in request to schedule your PIMs in future times. For example, every 7.5 hours for msrresrchvc so that your jobs in queue would not lose PIM during waiting. But check with your VC admin for permission.
