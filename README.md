@@ -24,3 +24,14 @@ pytz
 ```
 
 You may update 'start_time' in request to schedule your PIMs in future times. For example, every 7.5 hours for msrresrchvc so that your jobs in queue would not lose PIM during waiting. But check with your VC admin for permission.
+
+Similarly, assigning roles through PIM is also slow. You can do the job with assign.py. For example, you have a AzureML workspace "myworkspace" and a storage account "mystorage" and you want myworkspace to read/write mystorage.
+You need to assign the role "Storage Blob Data Contributor" (case sensitive) as follows:
+```
+python assign.py mystorage "Storage Blob Data Contributor" myworkspace
+```
+
+Note that the script assumes mystorage and myworkspace are in the same subscription "mysubscription" and you have chosen mysubscription as the default one. If not, you can use the optional parameter --subscription_name
+```
+python assign.py mystorage "Storage Blob Data Contributor" myworkspace --subscription_name mysubscription
+```
