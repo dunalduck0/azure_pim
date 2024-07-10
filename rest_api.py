@@ -66,9 +66,6 @@ def activate_scope(scope_name, scope_id, role_id, user_id, headers, comment=None
 
 def assign_role(user_id, scope_id, role_id, headers):
     '''documenation: https://learn.microsoft.com/en-us/rest/api/authorization/role-assignments/create?view=rest-authorization-2022-04-01&tabs=Python'''
-    if not comment:
-        comment = f"Add role {role_id}"
-
     request_uuid = str(uuid.uuid4())  # a unique GUI for the request
     url = f"https://management.azure.com/{scope_id}/providers/Microsoft.Authorization/roleAssignments/{request_uuid}?api-version=2022-04-01"
 
