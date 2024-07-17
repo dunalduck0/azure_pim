@@ -20,7 +20,6 @@ class CommandFailedException(Exception):
 
 
 def run_command(cmd: list[str]):
-    #print("Running command:\n" + ' '.join(cmd))
     p = subprocess.run(cmd, shell=False, check=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if p.returncode != 0:
         raise CommandFailedException(cmd, p.returncode, p.stderr.decode('utf-8').strip())
@@ -59,31 +58,30 @@ def get_signed_in_user(access_token=None):
     return jwt.decode(access_token, algorithms=['RS256'], options={'verify_signature': False})['oid']
 
 
-def get_subcription(subscription_name=None):
-    """Get the current subscription. It is too slow to process all subscriptions."""
-    cmd = ["az", "account", "show", "--query", "{name: name, id: id}"]
+def get_subcription_id_by_name(subscription_name=None):
+    """Get subscription ID by name. Return the signed in subscription if no name is provided."""
+    cmd = ["az", "account", "show", "--query", "id", "-o", "tsv"]
     if subscription_name:
         cmd += ["--name", subscription_name]
-    rst = json.loads(run_command(cmd))
-    return rst
+    return run_command(cmd)
 
 
-def get_resource_group(resource_group_name, subscription):
+def get_resource_group_ids_by_name(resource_group_name, sid):
     """Get everything that matches the resource group name."""
-    cmd = ["az", "group", "list", "--subscription", subscription,
+    cmd = ["az", "group", "list", "--subscription", sid,
             "--query", f"[? name=='{resource_group_name}'].id"]
     return json.loads(run_command(cmd))
 
 
-def get_resource(resource_name, subscription):
+def get_resource_ids_by_name(resource_name, sid):
     """Get everything that matches the resource name."""
-    cmd = ["az", "resource", "list", "--subscription", subscription,
+    cmd = ["az", "resource", "list", "--subscription", sid,
            "--name", resource_name, "--query", "[].id"]
     return json.loads(run_command(cmd))
 
 
-def get_role(role_name, subscription):
-    """Role name is case sensitive!"""
+def get_role_ids_by_name(role_name, subscription):
+    """Get everything that matches the role name. Role name is case sensitive!"""
     cmd = ["az", "role", "definition", "list", "--subscription", subscription,
            "--name", role_name, "--query", "[].id"]
     return json.loads(run_command(cmd))

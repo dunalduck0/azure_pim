@@ -1,7 +1,7 @@
 import argparse
 
 from az_cli import get_access_token, get_signed_in_user
-from rest_api import activate_scope, list_activated, list_eligibility
+from rest_api import activate_role, list_activated, list_eligibility
 
 
 def init():
@@ -46,7 +46,12 @@ if __name__ == "__main__":
             raise NotImplementedError("Multiple roles for the same scope is not supported yet")
 
         s = scope_name_lookup[scope_name][0]
-        scope_id = s['scope']['id']
+        scope_id = s['scope']['id'].strip('/')
         role_id = s['roleDefinition']['id']
-        rst = activate_scope(scope_name, scope_id, role_id, user_id, headers)
-        print(scope_name, '---', s['roleDefinition']['displayName'], '---', rst['properties']['status'])
+        rst = activate_role(scope_id, role_id, user_id, headers)
+
+        scope_name = rst['properties']['expandedProperties']['scope']['displayName']
+        role_name = rst['properties']['expandedProperties']['roleDefinition']['displayName']
+        user_name = rst['properties']['expandedProperties']['principal']['displayName']
+        status = rst['properties']['status']
+        print(f"{scope_name} --- {role_name} --- {user_name} --- {status}")
