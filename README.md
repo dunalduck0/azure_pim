@@ -28,7 +28,7 @@ pim.py gcrllama2ws msrresrchvc
 It is possible to change 'start_time' to schedule your PIMs in a future time. For example, to activate msrresrchvc every 8 hours so that your jobs in queue would not lose PIM during waiting. But check with your VC admin for permission.
 
 ## Grant active roles
-All AML workspaces need keyless access to storage accounts now. Assume you have a AzureML workspace "myworkspace" and a storage account "mystorage". If you have "Owner" or "User Access Administrator" role over mystorage, you can give myworkspace read/write permission over mystorage. To do so, you create a JSON line file task.jsonl as follows and run assign.py with it.
+All AML workspaces need keyless access to storage accounts now. Assume you have a AzureML workspace "myworkspace" and a storage account "mystorage". If you have "Owner" or "User Access Administrator" role over mystorage, you can give myworkspace read/write permission over mystorage. To do so, you create a JSON line file task.jsonl as follows and run assign.py with it. You can have more than one task in task.jsonl.
 
 ```
 task.jsonl:
