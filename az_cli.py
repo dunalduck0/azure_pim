@@ -1,4 +1,3 @@
-
 import json
 import subprocess
 
@@ -68,33 +67,75 @@ def get_subcription_id_by_name(subscription_name=None):
 
 def get_resource_group_ids_by_name(resource_group_name, sid):
     """Get everything that matches the resource group name."""
-    cmd = ["az", "group", "list", "--subscription", sid,
-            "--query", f"[? name=='{resource_group_name}'].id"]
+    cmd = [
+        "az",
+        "group",
+        "list",
+        "--subscription",
+        sid,
+        "--query",
+        f"[? name=='{resource_group_name}'].id",
+    ]
     return json.loads(run_command(cmd))
 
 
 def get_resource_ids_by_name(resource_name, sid):
     """Get everything that matches the resource name."""
-    cmd = ["az", "resource", "list", "--subscription", sid,
-           "--name", resource_name, "--query", "[].id"]
+    cmd = [
+        "az",
+        "resource",
+        "list",
+        "--subscription",
+        sid,
+        "--name",
+        resource_name,
+        "--query",
+        "[].id",
+    ]
     return json.loads(run_command(cmd))
 
 
 def get_role_ids_by_name(role_name, subscription):
     """Get everything that matches the role name. Role name is case sensitive!"""
-    cmd = ["az", "role", "definition", "list", "--subscription", subscription,
-           "--name", role_name, "--query", "[].id"]
+    cmd = [
+        "az",
+        "role",
+        "definition",
+        "list",
+        "--subscription",
+        subscription,
+        "--name",
+        role_name,
+        "--query",
+        "[].id",
+    ]
     return json.loads(run_command(cmd))
 
 
-def get_service_principal(sp_name, subscription):
-    try:
-        # TODO: unable to run due to AADSTS530003
-        cmd = ["az", "ad", "sp", "list", "--filter", f"displayName eq '{sp_name}'",
-            "--query", "[].{id: id, alternativeNames: alternativeNames[1]}"]
-        return json.loads(run_command(cmd))
-    except CommandFailedException:
-        # fallback to using resource list
-        cmd = ["az", "resource", "list", "--subscription", subscription,
-               "--name", sp_name, "--query", "[].{id: identity.principalId, alternativeNames: id}"]
-        return json.loads(run_command(cmd))
+def get_user_ids_by_name(asignee_name):
+    """Get everything that matches the asignee name."""
+    cmd = [
+        "az",
+        "ad",
+        "user",
+        "list",
+        "--display-name",
+        asignee_name,
+        "--query",
+        "[].id",
+    ]
+    return json.loads(run_command(cmd))
+
+
+def get_service_principle_ids_by_name(sp_name):
+    cmd = [
+        "az",
+        "ad",
+        "sp",
+        "list",
+        "--display-name",
+        sp_name,
+        "--query",
+        "[].id",
+    ]
+    return json.loads(run_command(cmd))

@@ -7,7 +7,9 @@ from az_cli import (
     get_resource_group_ids_by_name,
     get_resource_ids_by_name,
     get_role_ids_by_name,
+    get_service_principle_ids_by_name,
     get_subcription_id_by_name,
+    get_user_ids_by_name,
     return_single_item_from_multiple_choices,
 )
 from rest_api import assign_active_role, remove_active_role
@@ -76,17 +78,25 @@ def update_subscription_id(task):
 def update_assignee_id(task):
     if 'assignee_id' in task:
         return
-    
+
     if 'assignee_name' in task:
-        raise NotImplementedError("Assignee name is not supported at the moment.")
-    
+        candidates = get_user_ids_by_name(task["assignee_name"])
+        candidates += get_service_principle_ids_by_name(task["assignee_name"])
+        if len(candidates) == 0:
+            raise ValueError(
+                "Cannot find user/service principle with name (case insensitive): "
+                + task["assignee_name"]
+            )
+        task["assignee_id"] = return_single_item_from_multiple_choices(candidates)
+        return
+
     raise ValueError("No assignee name or ID provided.")
 
 
 def update_scope_id(task):
     if 'scope_id' in task:
         return
-    
+
     candidates = []
     if 'scope_name' in task:
         try:
@@ -98,10 +108,13 @@ def update_scope_id(task):
         candidates += get_resource_group_ids_by_name(task['scope_name'], task['subscription_id'])
         candidates += get_resource_ids_by_name(task['scope_name'], task['subscription_id'])
         if len(candidates) == 0:
-            raise ValueError("Cannot find subcription/resource group/resource with name (case insensitive): " + task['scope_name'])
+            raise ValueError(
+                "Cannot find subcription/resource group/resource with name (case insensitive): "
+                + task["scope_name"]
+            )
         task['scope_id'] = return_single_item_from_multiple_choices(candidates)
         return
-    
+
     raise ValueError("No scope name or ID provided.")
 
 
@@ -128,12 +141,12 @@ if __name__ == "__main__":
 
     for task in load_tasks(args.tasks):            
         update_subscription_id(task)  # TODO: too slow to process all subscriptions            
-        update_assignee_id(task)  # TODO: does not support assignee name
+        update_assignee_id(task)
         update_scope_id(task)
         update_role_id(task)
 
         rst = assign_active_role(task['scope_id'], task['role_id'], task['assignee_id'], headers)
-        #rst = remove_active_role(task['scope_id'], task['role_id'], task['assignee_id'], headers)
+        # rst = remove_active_role(task['scope_id'], task['role_id'], task['assignee_id'], headers)
 
         scope_name = rst['properties']['expandedProperties']['scope']['displayName']
         role_name = rst['properties']['expandedProperties']['roleDefinition']['displayName']
